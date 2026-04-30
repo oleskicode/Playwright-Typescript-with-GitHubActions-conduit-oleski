@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 import { LoginPage } from "../pages/LoginPage";
 import { HomePage } from "../pages/HomePage";
 import { UserProfilePage } from "../pages/UserProfilePage";
@@ -20,4 +20,29 @@ test("UI - User Profile Elements", async ({ page }) => {
 
   // Verify user Profile Elements are visible
   await userProfilePage.verifyPageElements();
+});
+
+test.beforeEach(async ({}, testInfo) => {
+  testInfo.annotations.push({
+    type: "Start Time:",
+    description: new Date().toISOString(),
+  });
+});
+
+test.afterEach(async ({ page }, testInfo) => {
+  testInfo.annotations.push({
+    type: "End Time:",
+    description: new Date().toISOString(),
+  });
+
+  // attach screenshot to the playwright html report
+  if (testInfo.status !== testInfo.expectedStatus) {
+    const screenshot = await page.screenshot({
+      fullPage: true,
+    });
+    await testInfo.attach("Screenshot on failure:", {
+      body: screenshot,
+      contentType: "image/png",
+    });
+  }
 });

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 test.describe("API - ", { tag: "@smoke" }, () => {
-  test("Get and Validate Auth Token - should fetch auth token from login endpoint", async ({
+  test("API - Get and Validate Auth Token - should fetch auth token from login endpoint", async ({
     request,
   }) => {
     const requestURL = process.env.API_BASE_URL + "/users/login";
