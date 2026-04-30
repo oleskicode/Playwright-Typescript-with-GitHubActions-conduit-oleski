@@ -15,20 +15,27 @@ test("UI - Simple Login Test", async ({ page }) => {
   await loginPage.verifyUserIsLoggedIn(process.env.USER_NAME!);
 });
 
-test.beforeEach(() => {
-  console.log("hook beforeEach");
-
-  test.info().annotations.push({
+test.beforeEach(async ({}, testInfo) => {
+  testInfo.annotations.push({
     type: "Start Time:",
     description: new Date().toISOString(),
   });
 });
 
-test.afterEach(() => {
-  console.log("hook afterEach");
-
-  test.info().annotations.push({
+test.afterEach(async ({ page }, testInfo) => {
+  testInfo.annotations.push({
     type: "End Time:",
     description: new Date().toISOString(),
   });
+
+  // attach screenshot to the playwright html report
+  if (testInfo.status !== testInfo.expectedStatus) {
+    const screenshot = await page.screenshot({
+      fullPage: true,
+    });
+    await testInfo.attach("Screenshot on failure:", {
+      body: screenshot,
+      contentType: "image/png",
+    });
+  }
 });
