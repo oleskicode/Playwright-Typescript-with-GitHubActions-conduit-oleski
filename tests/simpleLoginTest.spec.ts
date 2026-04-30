@@ -1,9 +1,11 @@
-import { test, expect } from "@playwright/test";
-import { LoginPage } from "../pages/LoginPage";
 import dotenv from "dotenv";
+import { test } from "@playwright/test";
+import { LoginPage } from "../pages/LoginPage";
+import { HomePage } from "../pages/HomePage";
 
-test("UI - Simple Login Test", async ({ page }) => {
+test("UI - Login Test", async ({ page }) => {
   const loginPage = new LoginPage(page);
+  const homePage = new HomePage(page);
 
   // Open Login page
   await loginPage.goto();
@@ -12,7 +14,7 @@ test("UI - Simple Login Test", async ({ page }) => {
   await loginPage.login(process.env.USER_EMAIL!, process.env.USER_PASSWORD!);
 
   // Verify
-  await loginPage.verifyUserIsLoggedIn(process.env.USER_NAME!);
+  await homePage.verifyUserIsLoggedIn(process.env.USER_NAME!);
 });
 
 test.beforeEach(async ({}, testInfo) => {
