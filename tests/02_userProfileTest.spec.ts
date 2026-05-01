@@ -1,32 +1,43 @@
-import { test } from "@playwright/test";
-import { LoginPage } from "../pages/LoginPage";
+import { expect, test } from "@playwright/test";
 import { HomePage } from "../pages/HomePage";
 import { UserProfilePage } from "../pages/UserProfilePage";
 
 test("UI - User Profile Elements", async ({ page }) => {
-  const loginPage = new LoginPage(page);
   const homePage = new HomePage(page);
   const userProfilePage = new UserProfilePage(page);
 
-  // Open Login page
-  await loginPage.goto();
-
-  // Login
-  await loginPage.login(process.env.USER_EMAIL!, process.env.USER_PASSWORD!);
-  await homePage.verifyUserIsLoggedIn(process.env.USER_NAME!);
-
   // Open User Profile
+  await homePage.goto();
   await homePage.openUserProfile();
 
   // Verify user Profile Elements are visible
   await userProfilePage.verifyPageElements();
 });
 
-test.beforeEach(async ({}, testInfo) => {
+test.beforeEach(async ({ page, request }, testInfo) => {
   testInfo.annotations.push({
     type: "Start Time:",
     description: new Date().toISOString(),
   });
+
+  // Get Auth Token via API
+  const requestURL = process.env.API_BASE_URL + "/users/login";
+  const response = await request.post(requestURL, {
+    data: {
+      user: {
+        email: process.env.USER_EMAIL,
+        password: process.env.USER_PASSWORD,
+      },
+    },
+  });
+  expect(response.ok).toBeTruthy();
+  const responceBody = await response.json();
+  const authToken = responceBody.user.token;
+
+  // inject token into Browser Context
+  await page.addInitScript((token) => {
+    window.localStorage.setItem("id_token", token);
+  }, authToken);
 });
 
 test.afterEach(async ({ page }, testInfo) => {

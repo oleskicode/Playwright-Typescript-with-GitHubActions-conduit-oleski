@@ -19,6 +19,10 @@ export class HomePage {
     });
   }
 
+  async goto() {
+    await this.page.goto(process.env.BASE_URL!);
+  }
+
   async verifyUserIsLoggedIn(userName: string) {
     await expect(this.newArticleLink).toBeEnabled();
     await expect(this.settings).toBeEnabled();
