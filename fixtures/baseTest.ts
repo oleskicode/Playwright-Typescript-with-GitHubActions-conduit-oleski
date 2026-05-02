@@ -19,8 +19,8 @@ export const test = base.extend({
       },
     });
     expect(response.ok).toBeTruthy();
-    const responceBody = await response.json();
-    const authToken = responceBody.user.token;
+    const responseBody = await response.json();
+    const authToken = responseBody.user.token;
     await page.addInitScript((token) => {
       window.localStorage.setItem("id_token", token);
     }, authToken);
