@@ -10,6 +10,7 @@ type MyFixtures = {
 
 export const test = base.extend<MyFixtures>({
   authToken: async ({ request }, use) => {
+    // --- SETUP (beforeEach logic) ---
     const loginURL = `${process.env.API_BASE_URL}/users/login`;
     const response = await request.post(loginURL, {
       data: {
