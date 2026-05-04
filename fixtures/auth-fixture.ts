@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// type for the fixture
 type MyFixtures = {
   authToken: string;
 };

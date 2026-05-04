@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import { test } from "@playwright/test";
 import { LoginPage } from "../pages/LoginPage";
 import { HomePage } from "../pages/HomePage";
@@ -19,14 +18,14 @@ test("UI - Login Test", async ({ page }) => {
 
 test.beforeEach(async ({}, testInfo) => {
   testInfo.annotations.push({
-    type: "Start Time:",
+    type: "Start Time (from beforeEach):",
     description: new Date().toISOString(),
   });
 });
 
 test.afterEach(async ({ page }, testInfo) => {
   testInfo.annotations.push({
-    type: "End Time:",
+    type: "End Time (from afterEach):",
     description: new Date().toISOString(),
   });
 
