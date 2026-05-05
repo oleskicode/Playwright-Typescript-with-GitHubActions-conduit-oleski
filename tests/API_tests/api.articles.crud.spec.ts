@@ -2,99 +2,95 @@ import { test, expect } from "../../fixtures/auth-fixture";
 
 test.describe("API - Articles", { tag: "@api" }, () => {
   test("API - Article CRUD operations", async ({ request, authToken }) => {
-    // console.log("Using authToken: ", authToken);
     const articlesUrl = `${process.env.API_BASE_URL}/articles`;
-    const articleTitle = `Article Name ${Date.now()}`;
-    const articleDescription = `Description for ${articleTitle}`;
-    const articleBody = `Body Text for ${articleTitle}`;
+
     const authHeaders = {
       Authorization: `Token ${authToken}`,
       "Content-Type": "application/json",
+    };
+    // console.log("Using authToken: ", authToken);
+
+    const timestamp = Date.now();
+
+    const articleDataOriginal = {
+      title: `Article Name ${timestamp}`,
+      description: `Description for ${timestamp}`,
+      body: `Body Text for ${timestamp}`,
+      tagList: [],
+    };
+
+    const articleDataUpdated = {
+      title: `UPD Article Name ${timestamp}`,
+      description: `UPD Description for ${timestamp}`,
+      body: `UPD Body Text for ${timestamp}`,
     };
 
     // --- CREATE ---
     const requestURLCreateArticle = `${articlesUrl}`;
     const createResponse = await request.post(requestURLCreateArticle, {
-      // 1. Add the headers object
       headers: authHeaders,
-      // 2. Pass data
       data: {
-        article: {
-          title: articleTitle,
-          description: articleDescription,
-          body: articleBody,
-          tagList: [],
-        },
+        article: articleDataOriginal,
       },
     });
 
-    expect(createResponse.ok()).toBeTruthy();
-    expect(createResponse.status()).toBe(200);
+    expect(createResponse).toBeOK();
     const createResponseBody = await createResponse.json();
-    const createdArticleSlug = createResponseBody.article.slug;
-    // console.log("Created Article Slug: ", createdArticleSlug);
+    const articleSlug = createResponseBody.article.slug;
+    // console.log("Created Article Slug: ", articleSlug);
 
     // -- READ --
     const readResponse = await request.get(
-      `${requestURLCreateArticle}/${createdArticleSlug}`,
+      `${requestURLCreateArticle}/${articleSlug}`,
     );
-    expect(readResponse.ok()).toBeTruthy();
-    expect(readResponse.status()).toBe(200);
+    expect(readResponse).toBeOK();
     const responseReadBody = await readResponse.json();
-    // console.log(responseReadBody);
-    expect(responseReadBody.article.title).toEqual(articleTitle);
-    expect(responseReadBody.article.description).toEqual(articleDescription);
-    expect(responseReadBody.article.body).toEqual(articleBody);
+    expect(responseReadBody.article.title).toEqual(articleDataOriginal.title);
+    expect(responseReadBody.article.description).toEqual(
+      articleDataOriginal.description,
+    );
+    expect(responseReadBody.article.body).toEqual(articleDataOriginal.body);
 
     // --- UPDATE ---
-    const requestURLUpdateArticle = `${requestURLCreateArticle}/${createdArticleSlug}`;
-    // console.log("requestURLUpdateArticle: " + requestURLUpdateArticle);
-    const updateResponse = await request.put(requestURLUpdateArticle, {
-      // 1. Add the headers object
-      headers: authHeaders,
-      // 2. Pass data
-      data: {
-        article: {
-          slug: createdArticleSlug,
-          title: "UPD " + articleTitle,
-          description: "UPD " + articleDescription,
-          body: "UPD " + articleBody,
+    const updateResponse = await request.put(
+      `${requestURLCreateArticle}/${articleSlug}`,
+      {
+        headers: authHeaders,
+        data: {
+          article: articleDataUpdated,
         },
       },
-    });
+    );
     if (!updateResponse.ok()) {
       console.log(await updateResponse.json());
     }
 
-    expect(updateResponse.ok()).toBeTruthy();
-    expect(updateResponse.status()).toBe(200);
+    expect(updateResponse).toBeOK();
     const updateResponseBody = await updateResponse.json();
-    expect(updateResponseBody.article.title).toEqual("UPD " + articleTitle);
+    expect(updateResponseBody.article.title).toEqual(articleDataUpdated.title);
     expect(updateResponseBody.article.description).toEqual(
-      "UPD " + articleDescription,
+      articleDataUpdated.description,
     );
-    expect(updateResponseBody.article.body).toEqual("UPD " + articleBody);
-    expect(updateResponseBody.article.slug).toEqual(createdArticleSlug);
+    expect(updateResponseBody.article.body).toEqual(articleDataUpdated.body);
+    expect(updateResponseBody.article.slug).toEqual(articleSlug);
 
     // --- DELETE ---
-    const requestURLDeleteArticle = `${articlesUrl}/${createdArticleSlug}`;
-    // console.log("requestURLDeleteArticle: " + requestURLDeleteArticle);
-
-    const deleteResponse = await request.delete(requestURLDeleteArticle, {
-      // Add the headers object
-      headers: authHeaders,
-    });
+    const deleteResponse = await request.delete(
+      `${articlesUrl}/${articleSlug}`,
+      {
+        headers: authHeaders,
+      },
+    );
     if (!deleteResponse.ok()) {
       console.log(await deleteResponse.json());
     }
-    expect(deleteResponse.ok()).toBeTruthy();
+    expect(deleteResponse).toBeOK();
     expect(deleteResponse.status()).toBe(204);
 
-    // Verify deletion
+    // --- VERIFY DELETION ---
     const verifyDeleteResponse = await request.get(
-      `${articlesUrl}/${createdArticleSlug}`,
+      `${articlesUrl}/${articleSlug}`,
     );
-    expect(verifyDeleteResponse.ok()).toBeFalsy();
     expect(verifyDeleteResponse.status()).toBe(404);
   });
 });
