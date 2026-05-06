@@ -1,6 +1,31 @@
 import { test, expect } from "../../fixtures/auth-fixture";
 
+let articleSlug: string | undefined;
+
 test.describe("API - Articles", { tag: "@api" }, () => {
+  test.afterEach(async ({ request, authToken }, testInfo) => {
+    // Run cleanup if test failed
+    if (testInfo.status !== testInfo.expectedStatus && articleSlug) {
+      const deleteResponse = await request.delete(
+        `${process.env.API_BASE_URL}/articles/${articleSlug}`,
+        {
+          headers: {
+            Authorization: `Token ${authToken}`,
+          },
+        },
+      );
+
+      if (!deleteResponse.ok()) {
+        console.log("Cleanup failed:", await deleteResponse.text());
+      } else {
+        console.log(`Cleanup successful. Deleted article: ${articleSlug}`);
+      }
+    }
+
+    // reset articleSlug value
+    articleSlug = undefined;
+  });
+
   test("API - Article CRUD operations", async ({ request, authToken }) => {
     const articlesUrl = `${process.env.API_BASE_URL}/articles`;
 
@@ -36,7 +61,7 @@ test.describe("API - Articles", { tag: "@api" }, () => {
 
     expect(createResponse).toBeOK();
     const createResponseBody = await createResponse.json();
-    const articleSlug = createResponseBody.article.slug;
+    articleSlug = createResponseBody.article.slug;
     // console.log("Created Article Slug: ", articleSlug);
 
     // -- READ --
@@ -92,5 +117,6 @@ test.describe("API - Articles", { tag: "@api" }, () => {
       `${articlesUrl}/${articleSlug}`,
     );
     expect(verifyDeleteResponse.status()).toBe(404);
+    articleSlug = undefined;
   });
 });
