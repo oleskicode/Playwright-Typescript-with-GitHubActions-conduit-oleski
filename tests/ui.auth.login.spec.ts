@@ -2,45 +2,42 @@ import { test } from "@playwright/test";
 import { LoginPage } from "../pages/LoginPage";
 import { HomePage } from "../pages/HomePage";
 
-test(
-  "UI - Login Test",
-  { tag: ["@smoke", "@authentication"] },
-  async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    const homePage = new HomePage(page);
-
-    // Open Login page
-    await loginPage.goto();
-
-    // Login
-    await loginPage.login(process.env.USER_EMAIL!, process.env.USER_PASSWORD!);
-
-    // Verify
-    await homePage.verifyUserIsLoggedIn(process.env.USER_NAME!);
-  },
-);
-
 test.beforeEach(async ({}, testInfo) => {
   testInfo.annotations.push({
-    type: "Start Time (from beforeEach):",
+    type: "startTime",
     description: new Date().toISOString(),
   });
 });
 
 test.afterEach(async ({ page }, testInfo) => {
   testInfo.annotations.push({
-    type: "End Time (from afterEach):",
+    type: "endTime",
     description: new Date().toISOString(),
   });
 
-  // attach screenshot to the playwright html report
   if (testInfo.status !== testInfo.expectedStatus) {
-    const screenshot = await page.screenshot({
-      fullPage: true,
-    });
-    await testInfo.attach("Screenshot on failure:", {
-      body: screenshot,
+    await testInfo.attach("failure-screenshot", {
+      body: await page.screenshot({ fullPage: true }),
       contentType: "image/png",
     });
   }
 });
+
+test(
+  "should login successfully with valid credentials",
+  { tag: ["@smoke", "@authentication"] },
+  async ({ page }) => {
+    const userEmail = process.env.USER_EMAIL!;
+    const userPassword = process.env.USER_PASSWORD!;
+    const userName = process.env.USER_NAME!;
+
+    const loginPage = new LoginPage(page);
+    const homePage = new HomePage(page);
+
+    await loginPage.goto();
+
+    await loginPage.login(userEmail, userPassword);
+
+    await homePage.verifyUserIsLoggedIn(userName);
+  },
+);
