@@ -5,6 +5,7 @@ export class HomePage {
   readonly userProfileNameLink: Locator;
   readonly newArticleLink: Locator;
   readonly settings: Locator;
+  readonly signUpLink: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -17,6 +18,7 @@ export class HomePage {
     this.userProfileNameLink = page.getByRole("link", {
       name: process.env.USER_NAME,
     });
+    this.signUpLink = page.getByRole("link", { name: "Sign up" });
   }
 
   async goto() {
@@ -26,11 +28,16 @@ export class HomePage {
   async verifyUserIsLoggedIn(userName: string) {
     await expect(this.newArticleLink).toBeEnabled();
     await expect(this.settings).toBeEnabled();
-    await expect(this.userProfileNameLink).toBeEnabled();
+    await expect(this.page.getByRole("link", { name: userName })).toBeEnabled();
   }
 
   async openUserProfile() {
     await expect(this.userProfileNameLink).toBeEnabled();
     await this.userProfileNameLink.click();
+  }
+
+  async openSignUpPage() {
+    await expect(this.signUpLink).toBeEnabled();
+    await this.signUpLink.click();
   }
 }
