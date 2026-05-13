@@ -48,13 +48,29 @@ test.describe("API Login", () => {
         },
       });
 
+      const body = await response.json();
+      // console.log(body);
+
       if (loginCase.successExpected) {
         expect(response.status()).toBe(200);
-        const body = await response.json();
         expect(body.user.token).toBeDefined();
+
+        // Validate response body structure
+        expect(body).toMatchObject({
+          user: {
+            username: expect.any(String),
+            email: loginCase.email,
+            token: expect.any(String),
+          },
+        });
       } else {
         expect(response.status()).not.toBe(200);
         expect(response.ok()).toBe(false);
+
+        // Validate response body structure
+        expect(body).toMatchObject({
+          errors: { "email or password": "is invalid" },
+        });
       }
     });
   }
