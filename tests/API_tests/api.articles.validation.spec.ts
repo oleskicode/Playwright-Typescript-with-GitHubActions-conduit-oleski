@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/auth-fixture";
+import { test, expect } from "../../fixtures/auth.api.fixture";
 import { ArticleBuilder } from "../../helpers/articleBuilder";
 
 test("Should fail with empty title", async ({ request, authToken }) => {
