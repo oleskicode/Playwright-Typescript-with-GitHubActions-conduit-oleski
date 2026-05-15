@@ -2,7 +2,6 @@ import { type Locator, type Page, expect } from "@playwright/test";
 
 export class HomePage {
   readonly page: Page;
-  readonly userProfileNameLink: Locator;
   readonly newArticleLink: Locator;
   readonly settings: Locator;
   readonly signUpLink: Locator;
@@ -14,42 +13,43 @@ export class HomePage {
     // Define Locators
     this.newArticleLink = page.getByRole("link", { name: "New Article" });
     this.settings = page.getByRole("link", { name: "Settings" });
-    this.userProfileNameLink = page.locator("li.nav-item").getByRole("link", {
-      name: process.env.USER_NAME,
-    });
     this.signUpLink = page.getByRole("link", { name: "Sign up" });
     this.yourFeedLink = page.getByRole("link", { name: "Your Feed" });
   }
 
   async goto() {
-    const url = process.env.BASE_URL;
-    if (!url)
+    const baseUrl = process.env.BASE_URL;
+    if (!baseUrl)
       throw new Error("BASE_URL is not defined in environment variables");
-    await this.page.goto(process.env.BASE_URL!);
+    await this.page.goto(baseUrl);
   }
 
-  async verifyUserIsLoggedIn(userName: string) {
-    await expect(this.newArticleLink).toBeEnabled();
-    await expect(this.settings).toBeEnabled();
-    await expect(
-      this.page.locator("li.nav-item").getByRole("link", {
-        name: userName,
-      }),
-    ).toBeEnabled();
+  getProfileLink(userName: string) {
+    // dynamic locator
+    return this.page.locator("li.nav-item").getByRole("link", {
+      name: userName,
+    });
   }
 
-  async openUserProfile() {
-    await expect(this.userProfileNameLink).toBeEnabled();
-    await this.userProfileNameLink.click();
+  async verifyUserIsLoggedIn(userName: string = process.env.USER_NAME!) {
+    await expect(this.newArticleLink).toBeVisible();
+    await expect(this.settings).toBeVisible();
+    await expect(this.getProfileLink(userName)).toBeVisible();
+  }
+
+  async openUserProfile(userName: string = process.env.USER_NAME!) {
+    const profileLink = this.getProfileLink(userName);
+    await expect(profileLink).toBeVisible();
+    await profileLink.click();
   }
 
   async openSignUpPage() {
-    await expect(this.signUpLink).toBeEnabled();
+    await expect(this.signUpLink).toBeVisible();
     await this.signUpLink.click();
   }
 
   async openUserFeed() {
-    // there is a hydration issue here so we use Promise.all
+    // there is a hydration issue here so we add additional checks and use Promise.all
     await expect(this.yourFeedLink).toBeVisible();
     await expect(this.yourFeedLink).toBeEnabled();
 
