@@ -20,13 +20,19 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
+    // Android / Pixel-like experience
     {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
+      name: "android",
+      use: {
+        ...devices["Pixel 7"],
+      },
     },
+    // iPhone / Safari experience
     {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
+      name: "iphone",
+      use: {
+        ...devices["iPhone 15 Pro"],
+      },
     },
   ],
 });
