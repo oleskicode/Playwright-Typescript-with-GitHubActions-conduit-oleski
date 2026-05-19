@@ -1,6 +1,4 @@
-import { test } from "@playwright/test";
-import { LoginPage } from "../pages/LoginPage";
-import { HomePage } from "../pages/HomePage";
+import { test } from "../fixtures/app.fixture";
 
 test.beforeEach(async ({}, testInfo) => {
   testInfo.annotations.push({
@@ -19,7 +17,7 @@ test.afterEach(async ({}, testInfo) => {
 test(
   "should login successfully with valid credentials",
   { tag: ["@smoke", "@authentication"] },
-  async ({ page }) => {
+  async ({ loginPage, homePage }) => {
     const userEmail = process.env.USER_EMAIL;
     const userPassword = process.env.USER_PASSWORD;
     const userName = process.env.USER_NAME;
@@ -27,9 +25,6 @@ test(
     if (!userEmail || !userPassword || !userName) {
       throw new Error("Missing required environment variables");
     }
-
-    const loginPage = new LoginPage(page);
-    const homePage = new HomePage(page);
 
     await test.step("Open login page", async () => {
       await loginPage.goto();
