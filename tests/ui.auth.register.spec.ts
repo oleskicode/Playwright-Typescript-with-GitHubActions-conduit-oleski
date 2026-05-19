@@ -1,8 +1,11 @@
-import { test } from "../fixtures/app.fixture";
+import { test } from "../fixtures/ui.app.fixture";
 import { createUser } from "../helpers/userFactory";
 
 test.describe("User Registration", () => {
-  test("Register new user successfully", async ({ homePage, registerPage }) => {
+  test("UI - Register new user successfully", async ({
+    homePage,
+    registerPage,
+  }) => {
     const { username, email, password } = createUser();
 
     // Open Main Page

@@ -9,25 +9,25 @@ type LoginCase = {
 
 const loginCases: LoginCase[] = [
   {
-    scenario: "Invalid email and invalid password",
+    scenario: "API - Login - Invalid email and invalid password",
     email: "invalidemail",
     password: "wrongpassword",
     successExpected: false,
   },
   {
-    scenario: "Correct email and incorrect password",
+    scenario: "API - Login - Correct email and incorrect password",
     email: process.env.USER_EMAIL!,
     password: process.env.USER_PASSWORD! + "123",
     successExpected: false,
   },
   {
-    scenario: "Incorrect email and correct password",
+    scenario: "API - Login - Incorrect email and correct password",
     email: process.env.USER_EMAIL! + "abc",
     password: process.env.USER_PASSWORD!,
     successExpected: false,
   },
   {
-    scenario: "Correct email and correct password",
+    scenario: "API - Login - Correct email and correct password",
     email: process.env.USER_EMAIL!,
     password: process.env.USER_PASSWORD!,
     successExpected: true,

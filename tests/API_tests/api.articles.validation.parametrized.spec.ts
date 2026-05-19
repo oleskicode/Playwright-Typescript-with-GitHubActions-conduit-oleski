@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/auth.api.fixture";
+import { test, expect } from "../../fixtures/api.auth.fixture";
 import { ArticleBuilder } from "../../helpers/articleBuilder";
 
 let articleSlug: string | undefined;

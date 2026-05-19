@@ -1,4 +1,4 @@
-import { test } from "../fixtures/app.fixture";
+import { test } from "../fixtures/ui.app.fixture";
 
 test.beforeEach(async ({}, testInfo) => {
   testInfo.annotations.push({
@@ -15,7 +15,7 @@ test.afterEach(async ({}, testInfo) => {
 });
 
 test(
-  "should login successfully with valid credentials",
+  "UI - Login successfully with valid credentials",
   { tag: ["@smoke", "@authentication"] },
   async ({ loginPage, homePage }) => {
     const userEmail = process.env.USER_EMAIL;

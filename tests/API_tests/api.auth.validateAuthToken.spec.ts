@@ -1,10 +1,10 @@
-import { test, expect } from "../../fixtures/auth.api.fixture";
+import { test, expect } from "../../fixtures/api.auth.fixture";
 
 test.describe(
   "API - Authentication",
   { tag: ["@api", "@authentication"] },
   () => {
-    test("should get and validate JWT auth token", async ({ authToken }) => {
+    test("API - Get and validate JWT auth token", async ({ authToken }) => {
       // console.log("Using authToken:", authToken);
 
       // Verify token structure

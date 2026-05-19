@@ -3,7 +3,7 @@ import { test } from "../fixtures/baseTest.fixture";
 import { UserFeedPage } from "../pages/UserFeedPage";
 
 test.describe("User Feed", () => {
-  test("should show empty message for a Feed without Subscriptions", async ({
+  test("UI - Empty message is shown for a Feed without Subscriptions", async ({
     page,
   }) => {
     const homePage = new HomePage(page);
