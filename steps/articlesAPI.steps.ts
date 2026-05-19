@@ -47,7 +47,7 @@ export class ArticlesAPISteps {
       },
     });
 
-    expect(response).toBeOK();
+    await expect(response).toBeOK();
     const body = await response.json();
     return body.article.slug;
   }
@@ -57,7 +57,7 @@ export class ArticlesAPISteps {
       `${this.articlesUrl}/${articleSlug}`,
     );
 
-    expect(response).toBeOK();
+    await expect(response).toBeOK();
 
     const body = await response.json();
 
@@ -77,7 +77,7 @@ export class ArticlesAPISteps {
       },
     );
 
-    expect(response).toBeOK();
+    await expect(response).toBeOK();
 
     const body = await response.json();
 
@@ -95,7 +95,7 @@ export class ArticlesAPISteps {
       },
     );
 
-    expect(response).toBeOK();
+    await expect(response).toBeOK();
     expect(response.status()).toBe(204);
   }
 
@@ -104,7 +104,7 @@ export class ArticlesAPISteps {
       `${this.articlesUrl}/${articleSlug}`,
     );
 
-    expect(response).not.toBeOK();
+    await expect(response).not.toBeOK();
     expect(response.status()).toBe(404);
   }
 }
