@@ -1,7 +1,7 @@
 import { HomePage } from "../pages/HomePage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { test } from "@playwright/test";
-import { createUser, User } from "../helpers/userFactory";
+import { createUser } from "../helpers/userFactory";
 
 test.describe("User Registration", () => {
   let homePage: HomePage;
@@ -15,15 +15,12 @@ test.describe("User Registration", () => {
   });
 
   test("should register a new user successfully", async () => {
-    const testUser = createUser();
-    const username = testUser.username;
-    const uniqueEmail = testUser.email;
-    const password = testUser.password;
+    const { username, email, password } = createUser();
 
-    await registerPage.fillRegistrationForm(username, uniqueEmail, password);
+    await registerPage.fillRegistrationForm(username, email, password);
     await registerPage.submitRegistration();
 
-    // Verify that the user is redirected to the home page and logged in
+    // Verify registration - user is logged in
     await homePage.verifyUserIsLoggedIn(username);
   });
 });
