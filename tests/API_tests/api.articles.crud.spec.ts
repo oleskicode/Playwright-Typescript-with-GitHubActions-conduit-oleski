@@ -1,4 +1,4 @@
-import { test } from "../../fixtures/api.auth.fixture";
+import { test } from "../../fixtures/api.authToken.fixture";
 import { ArticlesAPISteps } from "../../steps/articlesAPI.steps";
 
 let articleSlug: string | undefined;

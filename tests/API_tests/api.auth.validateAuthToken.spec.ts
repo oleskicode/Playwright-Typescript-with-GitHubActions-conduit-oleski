@@ -1,4 +1,4 @@
-import { test, expect } from "../../fixtures/api.auth.fixture";
+import { test, expect } from "../../fixtures/api.authToken.fixture";
 
 test.describe(
   "API - Authentication",

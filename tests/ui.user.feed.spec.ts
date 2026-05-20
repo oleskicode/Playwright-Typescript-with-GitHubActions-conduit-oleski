@@ -1,5 +1,5 @@
 import { HomePage } from "../pages/HomePage";
-import { test } from "../fixtures/baseTest.fixture";
+import { test } from "../fixtures/ui.pages.fixture.auth";
 import { UserFeedPage } from "../pages/UserFeedPage";
 
 test.describe("User Feed", () => {

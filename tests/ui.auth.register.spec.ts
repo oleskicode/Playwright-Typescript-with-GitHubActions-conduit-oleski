@@ -1,4 +1,4 @@
-import { test } from "../fixtures/ui.app.fixture";
+import { test } from "../fixtures/ui.pages.fixture.noauth";
 import { createUser } from "../helpers/userFactory";
 
 test.describe("User Registration", () => {

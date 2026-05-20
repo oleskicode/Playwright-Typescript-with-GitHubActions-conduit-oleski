@@ -1,17 +1,14 @@
-import { test } from "../fixtures/baseTest.fixture";
-import { HomePage } from "../pages/HomePage";
-import { SettingsPage } from "../pages/SettingsPage";
+import { test } from "../fixtures/ui.pages.fixture.auth";
 
 test(
-  "UI - Settings Page - Logged In",
+  "UI - Settings Page - Signed In",
   { tag: ["@smoke", "@settings"] },
-  async ({ page }) => {
-    const homePage = new HomePage(page);
-    const settingsPage = new SettingsPage(page);
-
-    // Open Settings Page as a Logged In user
+  async ({ homePage, settingsPage }) => {
+    // Open Settings Page as a signed-in user
     await homePage.goto();
     await settingsPage.goto();
+
+    // Verify Settings page for the signed-in user
     await settingsPage.verifyUserIsSignedIn();
   },
 );

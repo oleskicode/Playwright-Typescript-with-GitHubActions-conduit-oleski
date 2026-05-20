@@ -1,4 +1,4 @@
-import { test } from "../fixtures/baseTest.fixture";
+import { test } from "../fixtures/ui.pages.fixture.auth";
 import { HomePage } from "../pages/HomePage";
 import { UserProfilePage } from "../pages/UserProfilePage";
 

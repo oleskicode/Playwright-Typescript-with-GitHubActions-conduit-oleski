@@ -1,4 +1,4 @@
-import { test } from "../fixtures/ui.app.fixture";
+import { test } from "../fixtures/ui.pages.fixture.noauth";
 
 test.beforeEach(async ({}, testInfo) => {
   testInfo.annotations.push({
