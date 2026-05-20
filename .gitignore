@@ -17,6 +17,9 @@ logs/
 .env
 .env.*
 
+# Exception to track the example template
+!.env.example
+
 # OS generated files
 .DS_Store
 Thumbs.db
