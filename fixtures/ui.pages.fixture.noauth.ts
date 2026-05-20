@@ -4,12 +4,16 @@ import { HomePage } from "../pages/HomePage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { LoginPage } from "../pages/LoginPage";
 import { SettingsPage } from "../pages/SettingsPage";
+import { UserFeedPage } from "../pages/UserFeedPage";
+import { UserProfilePage } from "../pages/UserProfilePage";
 
 type AppFixtures = {
   homePage: HomePage;
   registerPage: RegisterPage;
   loginPage: LoginPage;
   settingsPage: SettingsPage;
+  userFeedPage: UserFeedPage;
+  userProfilePage: UserProfilePage;
 };
 
 export const test = base.extend<AppFixtures>({
@@ -24,6 +28,12 @@ export const test = base.extend<AppFixtures>({
   },
   settingsPage: async ({ page }, use) => {
     await use(new SettingsPage(page));
+  },
+  userFeedPage: async ({ page }, use) => {
+    await use(new UserFeedPage(page));
+  },
+  userProfilePage: async ({ page }, use) => {
+    await use(new UserProfilePage(page));
   },
 });
 
