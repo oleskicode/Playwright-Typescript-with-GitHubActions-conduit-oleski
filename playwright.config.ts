@@ -4,6 +4,8 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 export default defineConfig({
+  // Global setup:
+  globalSetup: "./fixtures/global.setup.ts",
   testDir: "./tests",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
