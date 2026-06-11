@@ -25,9 +25,10 @@ async function globalSetup() {
     },
   });
 
-  if (response.status() === 200) {
+  if (response.status() === 200 || response.status() === 422) {
+    // 200 if just registered, 422 if already present in the user base
     console.log(
-      "[Global Setup] Success: User registered successfully (for today).",
+      "[Global Setup] Success: User is/already registered successfully (for today).",
     );
   } else {
     // Fail the entire test suite run if the prerequisite fails unexpectedly
