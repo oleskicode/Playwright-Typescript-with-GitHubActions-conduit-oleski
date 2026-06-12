@@ -37,9 +37,6 @@ async function globalSetup() {
     );
   }
 
-  // Save storage state to a file
-  await apiContext.storageState({ path: "userStorageState.json" });
-
   await apiContext.dispose();
 }
 

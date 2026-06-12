@@ -1,4 +1,4 @@
-import { test as base, expect } from "./ui.pages.fixture.noauth";
+import { test as base, expect } from "./ui.pages.fixture";
 
 // Extending base test to include setup and teardown
 export const test = base.extend({

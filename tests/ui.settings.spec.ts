@@ -1,4 +1,4 @@
-import { test } from "../fixtures/ui.pages.fixture.auth";
+import { test } from "../fixtures/ui.auth.fixture";
 
 test(
   "UI - Settings Page - Signed In",

@@ -1,4 +1,4 @@
-import { test } from "../fixtures/ui.pages.fixture.auth";
+import { test } from "../fixtures/ui.auth.fixture";
 
 test.describe("User Feed", () => {
   test("UI - Empty message is shown for a Feed without Subscriptions", async ({
