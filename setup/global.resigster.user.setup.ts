@@ -1,5 +1,7 @@
 import { request } from "@playwright/test";
 
+// This is to register user or make sure it is already registered
+// the localStorate is not implemented here and this is by design
 async function globalSetup() {
   const email = process.env.USER_EMAIL;
   const username = process.env.USER_NAME;
