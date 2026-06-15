@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
 
-test("Mock - Verify no articles is shown", async ({ page }) => {
+test("UI - API Response Mock - Verify no articles is shown correctly", async ({
+  page,
+}) => {
   await page.route(`**/articles?*`, async (route) => {
     if (route.request().method() === "GET") {
       await route.fulfill({

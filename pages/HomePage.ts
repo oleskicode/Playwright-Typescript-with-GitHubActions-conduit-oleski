@@ -17,11 +17,16 @@ export class HomePage {
     this.yourFeedLink = page.getByRole("link", { name: "Your Feed" });
   }
 
+  async verifyHomePageIsOpened() {
+    await expect(this.page).toHaveURL(process.env.BASE_URL!);
+  }
+
   async goto() {
     const baseUrl = process.env.BASE_URL;
     if (!baseUrl)
       throw new Error("BASE_URL is not defined in environment variables");
     await this.page.goto(baseUrl);
+    await this.verifyHomePageIsOpened();
   }
 
   getProfileLink(userName: string) {
