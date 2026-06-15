@@ -8,19 +8,24 @@ test.describe("User Registration", () => {
   }) => {
     const { username, email, password } = createUser();
 
-    // Open Main Page
-    await homePage.goto();
-    await homePage.openSignUpPage();
+    await test.step("Open Sign Up page", async () => {
+      await homePage.goto();
+      await homePage.openSignUpPage();
+    });
 
-    // Fill and submit the form
-    await registerPage.fillRegistrationForm(username, email, password);
-    await registerPage.submitRegistration();
+    await test.step("Fill and submit the registration form", async () => {
+      await registerPage.fillRegistrationForm(username, email, password);
+      await registerPage.submitRegistration();
+    });
 
-    // Verify registration - user is logged in
-    await homePage.verifyUserIsLoggedIn(username);
+    await test.step("Verify registration is successful. User is signed in", async () => {
+      await homePage.verifyHomePageIsOpened();
+      await homePage.verifyUserIsLoggedIn(username);
 
-    console.log("username:", username);
-    console.log("email:", email);
-    console.log("password:", password);
+      // Log newly registered user:
+      // console.log("username:", username);
+      // console.log("email:", email);
+      // console.log("password:", password);
+    });
   });
 });
