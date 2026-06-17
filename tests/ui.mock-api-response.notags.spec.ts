@@ -1,6 +1,6 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "../fixtures/ui.pages.fixture";
 
-test("UI - API Response Mock - Empty tag list", async ({ page }) => {
+test("UI - API Response Mock - Empty tag list", async ({ page, homePage }) => {
   await page.route(`**/api/tags**`, async (route) => {
     if (route.request().method() === "GET") {
       await route.fulfill({
@@ -14,10 +14,9 @@ test("UI - API Response Mock - Empty tag list", async ({ page }) => {
     }
   });
 
-  await page.goto("/");
+  // Open Home Page
+  await homePage.goto();
 
-  const tagList = page.locator(".tag-list");
-
-  // We're making sure the tag list is empty
-  await expect(tagList.locator("a")).toHaveCount(0);
+  // Make sure the Popular Tags list is empty
+  await homePage.verifyPopularTagsListIsEmpty();
 });

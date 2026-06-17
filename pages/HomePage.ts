@@ -6,6 +6,7 @@ export class HomePage {
   readonly settings: Locator;
   readonly signUpLink: Locator;
   readonly yourFeedLink: Locator;
+  readonly popularTagsList: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -15,6 +16,7 @@ export class HomePage {
     this.settings = page.getByRole("link", { name: "Settings" });
     this.signUpLink = page.getByRole("link", { name: "Sign up" });
     this.yourFeedLink = page.getByRole("link", { name: "Your Feed" });
+    this.popularTagsList = page.locator(".tag-list");
   }
 
   async verifyHomePageIsOpened() {
@@ -62,5 +64,10 @@ export class HomePage {
       this.page.waitForURL("**/my-feed"),
       this.yourFeedLink.click(),
     ]);
+  }
+
+  async verifyPopularTagsListIsEmpty() {
+    await expect(this.popularTagsList.locator("a")).toHaveCount(0);
+    await expect(this.popularTagsList.getByRole("link")).toHaveCount(0);
   }
 }
