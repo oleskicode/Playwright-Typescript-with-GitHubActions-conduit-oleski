@@ -7,6 +7,7 @@ export class HomePage {
   readonly signUpLink: Locator;
   readonly yourFeedLink: Locator;
   readonly popularTagsList: Locator;
+  readonly noArticlesAreHereText: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -17,6 +18,7 @@ export class HomePage {
     this.signUpLink = page.getByRole("link", { name: "Sign up" });
     this.yourFeedLink = page.getByRole("link", { name: "Your Feed" });
     this.popularTagsList = page.locator(".tag-list");
+    this.noArticlesAreHereText = page.getByText("No articles are here... yet.");
   }
 
   async verifyHomePageIsOpened() {
@@ -69,5 +71,9 @@ export class HomePage {
   async verifyPopularTagsListIsEmpty() {
     await expect(this.popularTagsList.locator("a")).toHaveCount(0);
     await expect(this.popularTagsList.getByRole("link")).toHaveCount(0);
+  }
+
+  async verifyArticlesEmptyState() {
+    await expect(this.noArticlesAreHereText).toBeVisible();
   }
 }
