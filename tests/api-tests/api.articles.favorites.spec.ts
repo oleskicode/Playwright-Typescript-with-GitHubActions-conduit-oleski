@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, APIRequestContext } from "@playwright/test";
 import { createUser } from "../../helpers/userFactory";
 import { ArticleBuilder } from "../../helpers/articleBuilder";
 
@@ -8,10 +8,7 @@ if (!apiBase) {
   throw new Error("API_BASE_URL must be set in environment to run API tests");
 }
 
-async function registerUser(
-  request: Parameters<typeof test.extend>[0]["request"],
-  user: any,
-) {
+async function registerUser(request: APIRequestContext, user: any) {
   const res = await request.post(`${apiBase}/users`, { data: { user } });
   expect(res.ok()).toBeTruthy();
   const body = await res.json();
