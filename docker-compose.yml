@@ -1,0 +1,13 @@
+services:
+  tests:
+    build: .
+    container_name: conduit-playwright-tests
+    env_file:
+      - .env
+    environment:
+      - CI=true
+    volumes:
+      - ./playwright-report:/app/playwright-report
+      - ./test-results:/app/test-results
+      - ./userStorageState.json:/app/userStorageState.json
+    command: npx playwright test --workers=4
