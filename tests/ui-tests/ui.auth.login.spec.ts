@@ -14,6 +14,8 @@ test.afterEach(async ({}, testInfo) => {
   });
 });
 
+test.use({ storageState: { cookies: [], origins: [] } }); // override storageState to have it clean for this test
+
 test.describe("UI - Authentication - Login", () => {
   test(
     "UI - Login successfully with valid credentials",

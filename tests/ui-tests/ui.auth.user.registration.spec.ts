@@ -1,6 +1,8 @@
 import { test } from "../../fixtures/ui.pages.fixture";
 import { createUser } from "../../helpers/userFactory";
 
+test.use({ storageState: { cookies: [], origins: [] } }); // override storageState to have it clean for this test
+
 test.describe("User Registration", () => {
   test("UI - Register new user successfully", async ({
     homePage,
