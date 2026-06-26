@@ -2,6 +2,7 @@ import { expect, APIRequestContext } from "@playwright/test";
 import { test } from "../../fixtures/ui.pages.fixture";
 import { createUser } from "../../helpers/userFactory";
 import { ArticleBuilder } from "../../helpers/articleBuilder";
+import { HomePage } from "../../pages/HomePage";
 
 const apiBaseUrl = process.env.API_BASE_URL;
 
@@ -63,18 +64,11 @@ test.describe("UI - Articles Favorites", () => {
     articleSlug = article.slug;
 
     await homePage.goto();
-    const articlePreview = page.locator(".article-preview", {
-      has: page.locator("h1[data-qa-type='preview-title']", {
-        hasText: articleTitle,
-      }),
-    });
-    const favoriteButton = articlePreview.getByRole("button");
+    await homePage.verifyArticlePreviewIsVisible(articleTitle);
+    await homePage.verifyFavoriteCount(articleTitle, 0);
 
-    await expect(articlePreview).toBeVisible();
-    await expect(favoriteButton).toHaveText("0");
-
-    await favoriteButton.click();
-    await expect(favoriteButton).toHaveText("1");
+    await homePage.clickFavoriteButton(articleTitle);
+    await homePage.verifyFavoriteCount(articleTitle, 1);
 
     const browser = page.context().browser();
     if (!browser) {
@@ -90,32 +84,19 @@ test.describe("UI - Articles Favorites", () => {
     }, registeredLiker2.token);
 
     try {
-      await secondPage.goto(process.env.BASE_URL!);
-      const secondPreview = secondPage.locator(".article-preview", {
-        has: secondPage.locator("h1[data-qa-type='preview-title']", {
-          hasText: articleTitle,
-        }),
-      });
-      const secondFavoriteButton = secondPreview.getByRole("button");
+      const secondHomePage = new HomePage(secondPage);
+      await secondHomePage.goto();
+      await secondHomePage.verifyArticlePreviewIsVisible(articleTitle);
+      await secondHomePage.verifyFavoriteCount(articleTitle, 1);
 
-      await expect(secondPreview).toBeVisible();
-      await expect(secondFavoriteButton).toHaveText("1");
-
-      await secondFavoriteButton.click();
-      await expect(secondFavoriteButton).toHaveText("2");
+      await secondHomePage.clickFavoriteButton(articleTitle);
+      await secondHomePage.verifyFavoriteCount(articleTitle, 2);
     } finally {
       await secondContext.close();
     }
 
     await page.reload();
-    const refreshedPreview = page.locator(".article-preview", {
-      has: page.locator("h1[data-qa-type='preview-title']", {
-        hasText: articleTitle,
-      }),
-    });
-    const refreshedButton = refreshedPreview.getByRole("button");
-
-    await expect(refreshedPreview).toBeVisible();
-    await expect(refreshedButton).toHaveText("2");
+    await homePage.verifyArticlePreviewIsVisible(articleTitle);
+    await homePage.verifyFavoriteCount(articleTitle, 2);
   });
 });

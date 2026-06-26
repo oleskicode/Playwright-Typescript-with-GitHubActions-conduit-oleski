@@ -40,6 +40,33 @@ export class HomePage {
     });
   }
 
+  getArticlePreview(articleTitle: string): Locator {
+    // dynamic locator - scopes to the .article-preview card matching the given title
+    return this.page.locator(".article-preview", {
+      has: this.page.locator("h1[data-qa-type='preview-title']", {
+        hasText: articleTitle,
+      }),
+    });
+  }
+
+  getFavoriteButton(articleTitle: string): Locator {
+    return this.getArticlePreview(articleTitle).getByRole("button");
+  }
+
+  async verifyArticlePreviewIsVisible(articleTitle: string) {
+    await expect(this.getArticlePreview(articleTitle)).toBeVisible();
+  }
+
+  async verifyFavoriteCount(articleTitle: string, count: number) {
+    await expect(this.getFavoriteButton(articleTitle)).toHaveText(
+      String(count),
+    );
+  }
+
+  async clickFavoriteButton(articleTitle: string) {
+    await this.getFavoriteButton(articleTitle).click();
+  }
+
   async verifyUserIsLoggedIn(userName: string = process.env.USER_NAME!) {
     await expect(this.newArticleLink).toBeVisible();
     await expect(this.settings).toBeVisible();
