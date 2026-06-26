@@ -42,3 +42,6 @@ coverage/
 
 # Playwright specific
 .local-browsers/
+
+# auth storageState
+userStorageState.json
