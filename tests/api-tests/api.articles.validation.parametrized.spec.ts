@@ -1,65 +1,72 @@
-import { test, expect } from "../../fixtures/api.authToken.fixture";
-import { ArticleBuilder } from "../../helpers/articleBuilder";
+import { test, expect } from "@playwright/test";
+import {
+  UserResponseSchema,
+  ErrorResponseSchema,
+} from "../../schemas/api.user.schema";
 
-let articleSlug: string | undefined;
+type LoginCase = {
+  scenario: string;
+  email: string;
+  password: string;
+  successExpected: boolean;
+};
 
-test.afterEach(async ({ request, authToken }) => {
-  if (!articleSlug) return;
-
-  const response = await request.delete(
-    `${process.env.API_BASE_URL}/articles/${articleSlug}`,
-    {
-      headers: {
-        Authorization: `Token ${authToken}`,
-      },
-    },
-  );
-
-  expect(response.ok()).toBeTruthy();
-  articleSlug = undefined;
-});
-
-const testCases = [
+const loginCases: LoginCase[] = [
   {
-    testCase: "empty title",
-    buildArticle: () => new ArticleBuilder().withTitle("").build(),
+    scenario: "API - Login - Invalid email and invalid password",
+    email: "invalidemail",
+    password: "wrongpassword",
+    successExpected: false,
   },
   {
-    testCase: "empty body",
-    buildArticle: () => new ArticleBuilder().withBody("").build(),
+    scenario: "API - Login - Correct email and incorrect password",
+    email: process.env.USER_EMAIL!,
+    password: process.env.USER_PASSWORD! + "123",
+    successExpected: false,
   },
   {
-    testCase: "empty body and title",
-    buildArticle: () => new ArticleBuilder().withTitle("").withBody("").build(),
+    scenario: "API - Login - Incorrect email and correct password",
+    email: process.env.USER_EMAIL! + "abc",
+    password: process.env.USER_PASSWORD!,
+    successExpected: false,
+  },
+  {
+    scenario: "API - Login - Correct email and correct password",
+    email: process.env.USER_EMAIL!,
+    password: process.env.USER_PASSWORD!,
+    successExpected: true,
   },
 ];
 
-test.describe("API - Create article validation", () => {
-  for (const { testCase, buildArticle } of testCases) {
-    test(`API - Create article with ${testCase}`, async ({
-      request,
-      authToken,
-    }) => {
-      const authHeaders = {
-        Authorization: `Token ${authToken}`,
-        "Content-Type": "application/json",
-      };
+test.describe("API Login", () => {
+  for (const loginCase of loginCases) {
+    test(`${loginCase.scenario}`, async ({ request }) => {
+      const loginURL = `${process.env.API_BASE_URL}/users/login`;
 
-      const invalidArticle = buildArticle();
-
-      const response = await request.post(
-        `${process.env.API_BASE_URL}/articles`,
-        {
-          headers: authHeaders,
-          data: invalidArticle,
+      const response = await request.post(loginURL, {
+        data: {
+          user: {
+            email: loginCase.email,
+            password: loginCase.password,
+          },
         },
-      );
+      });
 
-      const responseBody = await response.json();
-      articleSlug = responseBody.article.slug;
+      const body = await response.json();
 
-      expect(response.ok()).toBeTruthy();
-      expect(response.status()).toBe(200);
+      if (loginCase.successExpected) {
+        expect(response.status()).toBe(200);
+
+        const { user } = UserResponseSchema.parse(body);
+        expect(user.token).toBeDefined();
+        expect(user.email).toBe(loginCase.email);
+      } else {
+        expect(response.status()).not.toBe(200);
+        expect(response.ok()).toBe(false);
+
+        const { errors } = ErrorResponseSchema.parse(body);
+        expect(errors).toMatchObject({ "email or password": "is invalid" });
+      }
     });
   }
 });

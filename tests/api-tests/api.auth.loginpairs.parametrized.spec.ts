@@ -1,4 +1,8 @@
 import { test, expect } from "@playwright/test";
+import {
+  UserResponseSchema,
+  ErrorResponseSchema,
+} from "../../schemas/api.user.schema";
 
 type LoginCase = {
   scenario: string;
@@ -52,24 +56,16 @@ test.describe("API Login", () => {
 
       if (loginCase.successExpected) {
         expect(response.status()).toBe(200);
-        expect(body.user.token).toBeDefined();
 
-        // Validate response body structure
-        expect(body).toMatchObject({
-          user: {
-            username: expect.any(String),
-            email: loginCase.email,
-            token: expect.any(String),
-          },
-        });
+        const { user } = UserResponseSchema.parse(body);
+        expect(user.token).toBeDefined();
+        expect(user.email).toBe(loginCase.email);
       } else {
         expect(response.status()).not.toBe(200);
         expect(response.ok()).toBe(false);
 
-        // Validate response body structure
-        expect(body).toMatchObject({
-          errors: { "email or password": "is invalid" },
-        });
+        const { errors } = ErrorResponseSchema.parse(body);
+        expect(errors).toMatchObject({ "email or password": "is invalid" });
       }
     });
   }
