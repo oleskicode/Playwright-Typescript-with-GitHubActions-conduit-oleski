@@ -1,4 +1,4 @@
-import { test } from "../../fixtures/ui.auth.fixture";
+import { test } from "../../fixtures/ui.pages.fixture";
 
 test.describe("UI - Settings", () => {
   test(

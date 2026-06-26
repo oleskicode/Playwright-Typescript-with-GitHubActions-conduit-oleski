@@ -1,45 +1,77 @@
-import { request } from "@playwright/test";
+import { chromium, request } from "@playwright/test";
+import path from "node:path";
+import { getAuthTokenFn } from "../helpers/apiGetAuthToken";
 
-// This is to register user or make sure it is already registered
-// the localStorate is not implemented here and this is by design
 async function globalSetup() {
   const email = process.env.USER_EMAIL;
   const username = process.env.USER_NAME;
   const password = process.env.USER_PASSWORD;
-  const api_base_url = process.env.API_BASE_URL;
+  const apiBaseUrl = process.env.API_BASE_URL;
+  const baseUrl = process.env.BASE_URL;
+  const storageStatePath = path.resolve(process.cwd(), "userStorageState.json");
 
-  if (!email || !username || !password || !api_base_url) {
+  if (!email || !username || !password || !apiBaseUrl || !baseUrl) {
     throw new Error("Missing ENV variables! Check project .env file");
   }
 
-  // Create an isolated API context
   const apiContext = await request.newContext({
-    baseURL: api_base_url,
+    baseURL: apiBaseUrl,
   } as any);
 
-  const response = await apiContext.post(`/api/users`, {
-    data: {
-      user: {
-        username: username,
-        email: email,
-        password: password,
+  try {
+    const response = await apiContext.post(`/api/users`, {
+      data: {
+        user: {
+          username: username,
+          email: email,
+          password: password,
+        },
       },
-    },
-  });
+    });
 
-  if (response.status() === 200 || response.status() === 422) {
-    // 200 if just registered, 422 if already present in the user base
-    console.log(
-      "[Global Setup] Success: User is/already registered successfully (for today).",
-    );
-  } else {
-    // Fail the entire test suite run if the prerequisite fails unexpectedly
-    throw new Error(
-      `[Global Setup] Failed to register user. Status: ${response.status()}`,
-    );
+    if (response.status() === 200 || response.status() === 422) {
+      console.log(
+        "[Global Setup] Success: User is/already registered successfully (for today).",
+      );
+    } else {
+      throw new Error(
+        `[Global Setup] Failed to register user. Status: ${response.status()}`,
+      );
+    }
+  } finally {
+    await apiContext.dispose();
   }
 
-  await apiContext.dispose();
+  const authContext = await request.newContext({
+    baseURL: apiBaseUrl,
+  } as any);
+
+  try {
+    const authToken = await getAuthTokenFn(authContext);
+    if (!authToken) {
+      throw new Error("[Global Setup] Failed to retrieve auth token.");
+    }
+    const browser = await chromium.launch();
+
+    try {
+      const context = await browser.newContext({ baseURL: baseUrl });
+      const page = await context.newPage();
+
+      await page.addInitScript((token: string) => {
+        globalThis.localStorage.setItem("id_token", token);
+      }, authToken);
+
+      await page.goto("/"); // so that localStorage is attached to the right origin
+      await context.storageState({ path: storageStatePath });
+      console.log(
+        `[Global Setup] Saved authentication state to ${storageStatePath}`,
+      );
+    } finally {
+      await browser.close();
+    }
+  } finally {
+    await authContext.dispose();
+  }
 }
 
 export default globalSetup;

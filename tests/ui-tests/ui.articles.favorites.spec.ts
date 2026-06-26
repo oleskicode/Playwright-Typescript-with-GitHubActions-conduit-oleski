@@ -1,5 +1,5 @@
 import { expect, APIRequestContext } from "@playwright/test";
-import { test } from "../../fixtures/ui.auth.fixture";
+import { test } from "../../fixtures/ui.pages.fixture";
 import { createUser } from "../../helpers/userFactory";
 import { ArticleBuilder } from "../../helpers/articleBuilder";
 
