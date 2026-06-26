@@ -1,6 +1,8 @@
 import { test, expect, APIRequestContext } from "@playwright/test";
 import { createUser } from "../../helpers/userFactory";
 import { ArticleBuilder } from "../../helpers/articleBuilder";
+import { ArticleResponseSchema } from "../../schemas/api.article.schema";
+import { UserResponseSchema } from "../../schemas/api.user.schema";
 
 const apiBase = process.env.API_BASE_URL;
 
@@ -12,7 +14,8 @@ async function registerUser(request: APIRequestContext, user: any) {
   const res = await request.post(`${apiBase}/users`, { data: { user } });
   expect(res.ok()).toBeTruthy();
   const body = await res.json();
-  return body.user; // contains username, email, token
+  const { user: registeredUser } = UserResponseSchema.parse(body);
+  return registeredUser; // contains username, email, token
 }
 
 test.describe("API - Articles Favorites Counter", { tag: "@api" }, () => {
@@ -53,11 +56,12 @@ test.describe("API - Articles Favorites Counter", { tag: "@api" }, () => {
       data: articlePayload,
     });
     expect(createRes.ok()).toBeTruthy();
-    const created = await createRes.json();
-    articleSlug = created.article.slug;
+    const createdBody = await createRes.json();
+    const { article: created } = ArticleResponseSchema.parse(createdBody);
+    articleSlug = created.slug;
 
     // Verify initial favorites count is 0
-    expect(created.article.favoritesCount).toBe(0);
+    expect(created.favoritesCount).toBe(0);
 
     // liker1 favorites the article
     const fav1 = await request.post(
@@ -68,7 +72,8 @@ test.describe("API - Articles Favorites Counter", { tag: "@api" }, () => {
     );
     expect(fav1.ok()).toBeTruthy();
     const fav1Body = await fav1.json();
-    expect(fav1Body.article.favoritesCount).toBe(1);
+    const { article: fav1Article } = ArticleResponseSchema.parse(fav1Body);
+    expect(fav1Article.favoritesCount).toBe(1);
 
     // liker2 favorites the article
     const fav2 = await request.post(
@@ -79,12 +84,14 @@ test.describe("API - Articles Favorites Counter", { tag: "@api" }, () => {
     );
     expect(fav2.ok()).toBeTruthy();
     const fav2Body = await fav2.json();
-    expect(fav2Body.article.favoritesCount).toBe(2);
+    const { article: fav2Article } = ArticleResponseSchema.parse(fav2Body);
+    expect(fav2Article.favoritesCount).toBe(2);
 
     // final GET to ensure persisted
     const getRes = await request.get(`${apiBase}/articles/${articleSlug}`);
     expect(getRes.ok()).toBeTruthy();
     const getBody = await getRes.json();
-    expect(getBody.article.favoritesCount).toBe(2);
+    const { article: getArticle } = ArticleResponseSchema.parse(getBody);
+    expect(getArticle.favoritesCount).toBe(2);
   });
 });

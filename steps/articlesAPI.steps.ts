@@ -1,4 +1,5 @@
 import { expect, type APIRequestContext } from "@playwright/test";
+import { ArticleResponseSchema } from "../schemas/api.article.schema";
 
 type ArticleData = {
   title: string;
@@ -49,7 +50,9 @@ export class ArticlesAPISteps {
 
     await expect(response).toBeOK();
     const body = await response.json();
-    return body.article.slug;
+    const { article } = ArticleResponseSchema.parse(body);
+
+    return article.slug;
   }
 
   async readArticle(articleSlug: string) {
@@ -60,10 +63,11 @@ export class ArticlesAPISteps {
     await expect(response).toBeOK();
 
     const body = await response.json();
+    const { article } = ArticleResponseSchema.parse(body);
 
-    expect(body.article.title).toBe(this.articleDataOriginal.title);
-    expect(body.article.description).toBe(this.articleDataOriginal.description);
-    expect(body.article.body).toBe(this.articleDataOriginal.body);
+    expect(article.title).toBe(this.articleDataOriginal.title);
+    expect(article.description).toBe(this.articleDataOriginal.description);
+    expect(article.body).toBe(this.articleDataOriginal.body);
   }
 
   async updateArticle(articleSlug: string) {
@@ -80,11 +84,12 @@ export class ArticlesAPISteps {
     await expect(response).toBeOK();
 
     const body = await response.json();
+    const { article } = ArticleResponseSchema.parse(body);
 
-    expect(body.article.slug).toBe(articleSlug);
-    expect(body.article.title).toBe(this.articleDataUpdated.title);
-    expect(body.article.description).toBe(this.articleDataUpdated.description);
-    expect(body.article.body).toBe(this.articleDataUpdated.body);
+    expect(article.slug).toBe(articleSlug);
+    expect(article.title).toBe(this.articleDataUpdated.title);
+    expect(article.description).toBe(this.articleDataUpdated.description);
+    expect(article.body).toBe(this.articleDataUpdated.body);
   }
 
   async deleteArticle(articleSlug: string) {
