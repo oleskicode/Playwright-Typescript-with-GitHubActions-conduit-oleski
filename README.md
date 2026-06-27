@@ -1,6 +1,8 @@
 # Playwright Playground
 
+🐳 **Docker-ready** | 🎭 Playwright + TypeScript | API & E2E Testing
 A TypeScript-based Playwright test automation framework showcasing both API and End-to-End (E2E) testing practices.
+Fully containerized with Docker for consistent, environment-agnostic test execution.
 
 **Website Under Test:** [Conduit (Learn WebdriverIO)](https://demo.learnwebdriverio.com/)
 
@@ -10,6 +12,7 @@ A TypeScript-based Playwright test automation framework showcasing both API and 
 
 - [Playwright](https://playwright.dev/) - A Node.js library to automate Chromium, Firefox and WebKit with a single API.
 - [TypeScript](https://www.typescriptlang.org/) - A strongly typed superset of JavaScript that compiles to plain JavaScript.
+- [Docker](https://www.docker.com/) - Containerized test execution with all browser engines pre-installed, no local setup required.
 - [Node.js](https://nodejs.org/) - A JavaScript runtime built on Chrome's V8 JavaScript engine.
 
 ## Prerequisites
@@ -20,39 +23,82 @@ Before running the tests, ensure you have an active, registered user account on 
 
 1.  **Clone the repository and install dependencies:**
 
-    ```bash
+```bash
     npm install
-    ```
+```
 
 2.  **Install Playwright Browsers:**
 
-    ```bash
+```bash
     npx playwright install
-    ```
+```
 
 3.  **Configure Environment Variables:**
 
     Create a `.env` file in the root folder of the project and populate it with your registered user credentials:
 
-    ```env
+```env
     USER_NAME=someJohn
     USER_EMAIL=john@testemail.com
     USER_PASSWORD=sdfgsADSG123
     API_BASE_URL=https://conduit-api.learnwebdriverio.com/api
     BASE_URL=https://demo.learnwebdriverio.com
-    ```
+```
 
 4.  **Run the tests:**
 
-    ```bash
+```bash
     npx playwright test
-    ```
+```
 
 5.  **View the test report:**
 
-    ```bash
+```bash
     npx playwright show-report
-    ```
+```
+
+---
+
+## Running with Docker
+
+The test suite is fully containerized using the official Playwright image, which bundles all three browser engines (Chromium, WebKit, and Mobile Chrome) so no local browser installation is required.
+
+1.  **Build the image:**
+
+```bash
+    docker compose build
+```
+
+2.  **Run the full suite:**
+
+```bash
+    docker compose run --rm tests
+```
+
+    This spins up a container that runs `globalSetup` (registering the test user via the API, fetching an auth token, and seeding `localStorage`), then executes all 57 tests across the `chromium`, `android`, and `iphone` projects.
+
+3.  **View results:**
+
+    Test artifacts are written to the host via volume mounts, so they're available after the container exits:
+
+```bash
+    npx playwright show-report   # opens ./playwright-report
+    ls test-results/             # screenshots, traces for failed tests
+```
+
+### Rebuilding after code changes
+
+The image is built once from a snapshot of the project (`COPY . .` in the `Dockerfile`). **Editing test files locally does not change an already-built image** — rebuild to pick up changes:
+
+```bash
+docker compose build
+docker compose run --rm tests
+```
+
+### Notes from building this out
+
+- **Worker count**: `playwright.config.ts` sets `workers: 1` when `CI=true` (set in `docker-compose.yml`) for deterministic runs. Local runs can override this for speed, e.g. `docker compose run --rm tests npx playwright test --workers=4`. Since tests hit a shared external demo API, higher worker counts increase load on a backend outside our control — 4 workers roughly halved run time without issues in testing, but this is worth tuning rather than assuming.
+- **Test data isolation**: an earlier version of `helpers/userFactory.ts` generated usernames via `faker.person.firstName()`, which draws from a small fixed pool. Under parallel execution against a long-lived shared backend, this occasionally collided with already-registered usernames (`"username": "is already taken."`). Fixed by appending a timestamp + random suffix to guarantee uniqueness per test run.
 
 ---
 
@@ -67,3 +113,6 @@ Before running the tests, ensure you have an active, registered user account on 
 - `setup/` - Setup files for global test configurations, like user registration.
 - `playwright.config.ts` - Global Playwright configuration, timeouts, and browser matrices.
 - `.env.example` - Template for environment variables (tracked in git).
+- `Dockerfile` - Defines the containerized test runner image.
+- `docker-compose.yml` - Orchestrates running the suite in a container.
+- `.dockerignore` - Excludes files (like `node_modules`, `.env`) from the build context.
