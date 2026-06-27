@@ -1,5 +1,5 @@
 import { test as base } from "@playwright/test";
-import { getAuthTokenFn } from "../helpers/apiGetAuthToken";
+import { getAuthTokenFn } from "../helpers/api.getAuthToken";
 
 type AuthTokenFixture = {
   authToken: string;

@@ -1,5 +1,5 @@
 import { test as base } from "./ui.pages.fixture";
-import { getAuthTokenFn } from "../helpers/apiGetAuthToken";
+import { getAuthTokenFn } from "../helpers/api.getAuthToken";
 
 export const test = base.extend({
   page: async ({ page, request }, use, testInfo) => {

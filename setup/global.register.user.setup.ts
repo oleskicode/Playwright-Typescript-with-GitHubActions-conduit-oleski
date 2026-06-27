@@ -1,6 +1,6 @@
 import { chromium, request } from "@playwright/test";
 import path from "node:path";
-import { getAuthTokenFn } from "../helpers/apiGetAuthToken";
+import { getAuthTokenFn } from "../helpers/api.getAuthToken";
 
 async function globalSetup() {
   const email = process.env.USER_EMAIL;

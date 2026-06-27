@@ -1,21 +1,13 @@
-import { test, expect, APIRequestContext } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { createUser } from "../../helpers/userFactory";
+import { registerUser } from "../../helpers/api.createUser";
 import { ArticleBuilder } from "../../helpers/articleBuilder";
 import { ArticleResponseSchema } from "../../schemas/api.article.schema";
-import { UserResponseSchema } from "../../schemas/api.user.schema";
 
 const apiBase = process.env.API_BASE_URL;
 
 if (!apiBase) {
   throw new Error("API_BASE_URL must be set in environment to run API tests");
-}
-
-async function registerUser(request: APIRequestContext, user: any) {
-  const res = await request.post(`${apiBase}/users`, { data: { user } });
-  expect(res.ok()).toBeTruthy();
-  const body = await res.json();
-  const { user: registeredUser } = UserResponseSchema.parse(body);
-  return registeredUser; // contains username, email, token
 }
 
 test.describe("API - Articles Favorites Counter", { tag: "@api" }, () => {
