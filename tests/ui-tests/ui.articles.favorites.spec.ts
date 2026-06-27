@@ -1,35 +1,13 @@
-import { expect, APIRequestContext } from "@playwright/test";
 import { test } from "../../fixtures/ui.pages.fixture";
 import { createUser } from "../../helpers/userFactory";
-import { ArticleBuilder } from "../../helpers/articleBuilder";
+import { registerUser } from "../../helpers/api.createUser";
+import { createArticle } from "../../helpers/api.createArticle";
 import { HomePage } from "../../pages/HomePage";
 
 const apiBaseUrl = process.env.API_BASE_URL;
 
 if (!apiBaseUrl) {
   throw new Error("API_BASE_URL must be set in environment to run UI tests");
-}
-
-async function registerUser(request: APIRequestContext, user: any) {
-  const res = await request.post(`${apiBaseUrl}/users`, { data: { user } });
-  expect(res.ok()).toBeTruthy();
-  const body = await res.json();
-  return body.user;
-}
-
-async function createArticle(
-  request: APIRequestContext,
-  token: string,
-  title: string,
-) {
-  const payload = new ArticleBuilder().withTitle(title).build();
-  const res = await request.post(`${apiBaseUrl}/articles`, {
-    headers: { Authorization: `Token ${token}` },
-    data: payload,
-  });
-  expect(res.ok()).toBeTruthy();
-  const body = await res.json();
-  return body.article;
 }
 
 test.describe("UI - Articles Favorites", () => {
