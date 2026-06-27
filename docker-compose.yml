@@ -9,5 +9,4 @@ services:
     volumes:
       - ./playwright-report:/app/playwright-report
       - ./test-results:/app/test-results
-      - ./userStorageState.json:/app/userStorageState.json
     command: npx playwright test --workers=4

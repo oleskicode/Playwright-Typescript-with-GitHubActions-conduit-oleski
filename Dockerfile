@@ -3,4 +3,5 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+RUN mkdir -p .auth
 CMD ["npx", "playwright", "test"]

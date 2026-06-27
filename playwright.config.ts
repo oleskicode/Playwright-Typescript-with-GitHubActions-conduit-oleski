@@ -16,7 +16,7 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     baseURL: process.env.BASE_URL,
-    storageState: `userStorageState.json`,
+    storageState: `.auth/user.json`,
   },
   projects: [
     {

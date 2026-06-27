@@ -44,4 +44,4 @@ coverage/
 .local-browsers/
 
 # auth storageState
-userStorageState.json
+.auth/

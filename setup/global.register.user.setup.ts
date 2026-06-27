@@ -8,7 +8,7 @@ async function globalSetup() {
   const password = process.env.USER_PASSWORD;
   const apiBaseUrl = process.env.API_BASE_URL;
   const baseUrl = process.env.BASE_URL;
-  const storageStatePath = path.resolve(process.cwd(), "userStorageState.json");
+  const storageStatePath = path.resolve(process.cwd(), ".auth/user.json");
 
   if (!email || !username || !password || !apiBaseUrl || !baseUrl) {
     throw new Error("Missing ENV variables! Check project .env file");
