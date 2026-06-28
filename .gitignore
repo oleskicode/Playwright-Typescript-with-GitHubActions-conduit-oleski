@@ -45,3 +45,6 @@ coverage/
 
 # auth storageState
 .auth/
+
+# linters
+eslint-output.json
