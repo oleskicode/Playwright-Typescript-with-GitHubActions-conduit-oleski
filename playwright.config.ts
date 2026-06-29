@@ -20,19 +20,19 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "chromium",
+      name: "chromium-desktop",
       use: { ...devices["Desktop Chrome"] },
     },
-    // Android / Pixel-like experience
+    // Chromium engine, Pixel 7 viewport/UA
     {
-      name: "android",
+      name: "chromium-pixel7",
       use: {
         ...devices["Pixel 7"],
       },
     },
-    // iPhone / Safari experience
+    // WebKit engine, iPhone 15 Pro viewport/UA
     {
-      name: "iphone",
+      name: "webkit-iphone15pro",
       use: {
         ...devices["iPhone 15 Pro"],
       },

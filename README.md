@@ -10,13 +10,13 @@ Fully containerized with Docker for consistent, environment-agnostic test execut
 
 ---
 
-## 📊 Live Test Report - GitHub Pages:
+## 📊 Live Test Report - GitHub Pages
 
-Every push triggers the full suite via GitHub Actions, and the HTML report is automatically published to GitHub Pages — no need to clone the repo or dig through CI logs to see the results:
+Every push triggers the full suite via GitHub Actions, with the HTML report published automatically to GitHub Pages:
 
 **🔗 [View the latest test report](https://oleskicode.github.io/Playwright-Typescript-with-GitHubActions-conduit-oleski/)**
 
-The report includes full traces, screenshots, and step-by-step breakdowns for every run, across all browser/device projects (`chromium`, `android`, `iphone`) — always reflecting the most recent commit on `master`.
+The report includes full traces, screenshots, and step-by-step breakdowns for every run, across all projects (`chromium-desktop`, `chromium-pixel7`, `webkit-iphone15pro`) — always reflecting the most recent commit on `master`.
 
 ---
 
@@ -71,9 +71,15 @@ npx playwright show-report
 
 ---
 
+## Mobile coverage: Chromium and WebKit included
+
+`playwright.config.ts` defines 3 projects: a desktop Chromium baseline, a Pixel Chromium project, and an iPhone project that runs on **WebKit**
+
+---
+
 ## Running with Docker
 
-The test suite is fully containerized using the official Playwright image, which bundles all three browser engines (Chromium, WebKit, and Mobile Chrome) so no local browser installation is required.
+The test suite is fully containerized using the official Playwright image, which bundles the Chromium and WebKit engines so no local browser installation is required.
 
 1. **Build the image:**
 
@@ -87,7 +93,7 @@ docker compose build
 docker compose run --rm tests
 ```
 
-This spins up a container that runs `globalSetup` (registering the test user via the API, fetching an auth token, and seeding `localStorage`), then executes all 57 tests across the `chromium`, `android`, and `iphone` projects.
+This spins up a container that runs `globalSetup` (registering the test user via the API, fetching an auth token, and seeding `localStorage`), then executes all 60 tests across the `chromium-desktop`, `chromium-pixel7`, and `webkit-iphone15pro` projects.
 
 3. **View results:**
 
@@ -100,7 +106,7 @@ ls test-results/             # screenshots, traces for failed tests
 
 ### Rebuilding after code changes
 
-The image is built once from a snapshot of the project (`COPY . .` in the `Dockerfile`). **Editing test files locally does not change an already-built image** — rebuild to pick up changes:
+The image is built once from a snapshot of the project (`COPY . .` in the `Dockerfile`). Editing test files locally does not change an already-built image — rebuild to pick up changes:
 
 ```bash
 docker compose build
@@ -109,8 +115,8 @@ docker compose run --rm tests
 
 ### Notes from building this out
 
-- **Worker count**: `playwright.config.ts` sets `workers: 1` when `CI=true` (set in `docker-compose.yml`) for deterministic runs. Local runs can override this for speed, e.g. `docker compose run --rm tests npx playwright test --workers=4`. Since tests hit a shared external demo API, higher worker counts increase load on a backend outside our control — 4 workers roughly halved run time without issues in testing, but this is worth tuning rather than assuming.
-- **Test data isolation**: an earlier version of `helpers/userFactory.ts` generated usernames via `faker.person.firstName()`, which draws from a small fixed pool. Under parallel execution against a long-lived shared backend, this occasionally collided with already-registered usernames (`"username": "is already taken."`). Fixed by appending a timestamp + random suffix to guarantee uniqueness per test run.
+- **Worker count**: `playwright.config.ts` sets `workers: 1` when `CI=true` (set in `docker-compose.yml`) for deterministic runs. Local runs can override this for speed, e.g. `docker compose run --rm tests npx playwright test --workers=4`. Tests hit a shared external demo API, so higher worker counts increase load on a backend outside our control — 4 workers roughly halved run time in testing here, but it's worth re-tuning per environment rather than assuming.
+- **Test data isolation**: an earlier version of `helpers/userFactory.ts` generated usernames via `faker.person.firstName()`, drawn from a small fixed pool. Under parallel execution against a long-lived shared backend, this occasionally collided with already-registered usernames. Now fixed by appending a timestamp + random suffix to guarantee uniqueness per run.
 
 ---
 
